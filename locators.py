@@ -7,14 +7,14 @@ First_restaurant_in_list_Xpath =  "(//div[@class='_29yzU']/button)[1]"
 Resultant_restaurant_Xpath = "(//div[@class='Search_widgetsV2__27BBR Search_widgets__3o_bA']/div/div/a)[1]"
 Resultant_restaurant_thumbnail_Xpath = "(//div[@class='Search_widgetsV2__27BBR Search_widgets__3o_bA']/div/div/div)[1]"
 Resultant_restaurant_name_Xpath = "(//div[@class='styles_restaurantName__29jAP'])[1]"
-
+Cuisine_tag_span_Xpath = "(//div[@class='styles_restaurantCuisines__3lBL4'])[1]/span"
 
 Rating_div_Xpath = "(//div[contains(@class, 'sc-aXZVg eqdoYF')])[2]"
 CFT_div_Xpath = "(//div[contains(@class, 'sc-aXZVg eqdoYF')])[3]"
 
-Cuisine_tag_div_Xpath = "(//div[contains(@class, 'sc-dqKyxz fSnmka')])"
-Discount_div_Xpath = "//div[contains(@class, 'sc-kuCHnY hSYeJb')]"
-
+# Cuisine_tag_div_Xpath = "//div[contains(@class, 'sc-jptKe gBgaSD')]"
+# Discount_div_Xpath = "//div[contains(@class, 'sc-kuCHnY hSYeJb')]"
+Discount_div_Xpath = "//div[contains(@class, 'sc-ctLLLr inwfSw')]"
 
 
 # <div class="sc-kuCHnY hSYeJb">

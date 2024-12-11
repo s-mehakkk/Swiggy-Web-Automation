@@ -1,0 +1,15 @@
+Chain_Name : Outlet_Location (CSV)
+
+--------------------------------example--------------------------------
+House of wok : Vasant Kunj, House of wok : Greater Kailash,..... 
+-----------------------------------------------------------------------
+
+
+Amma's Haus - by Asian Haus	: Greater Kailash 2, 
+Asian Haus - By Haus Delivery : Greater Kailash 2,
+Asian Haus - By Haus Delivery : Cyber City,
+Asian Haus - By Haus Delivery : Vasant Kunj,
+Masala Haus - By Asian Haus	: Greater Kailash 2,
+Sushi Haus - By Haus Delivery : Greater Kailash 2,
+Sushi Haus - By Haus Delivery : Cyber City,
+Sushi Haus - By Haus Delivery : Vasant Kunj,
