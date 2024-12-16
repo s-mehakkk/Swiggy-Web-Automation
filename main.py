@@ -6,34 +6,54 @@ from selenium.webdriver.support import expected_conditions as EC
 import locators
 import time
 import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 
-URL = "https://www.swiggy.com/restaurants"
+URL = "https://www.swiggy.com/"
 
-OUTLET = "House of wok : Vasant Kunj"
-OUTLET_NAME = "House of wok"
-restaurant_data = {}
+# OUTLET = "House of wok : Vasant Kunj"
+# OUTLET_NAME = "House of wok"
+restaurants_data = []
 
-def get_data_script():
-    service = Service(executable_path="./chromedriver")
-    driver = webdriver.Chrome(service=service)
+service = Service(executable_path="./chromedriver")
+driver = webdriver.Chrome(service=service)
 
+def open_and_login():
     driver.get(URL)
     time.sleep(3)
 
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, locators.Sign_in_span)))
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, locators.Sign_in_span)))
+
+    Sign_in_element = driver.find_element(By.XPATH, locators.Sign_in_span)
+    Sign_in_element.click()
+
+    time.sleep(45)
+
+
+def get_data_script(OUTLET, OUTLET_NAME):
+    driver.get("https://www.swiggy.com/restaurants")
+    time.sleep(8)
+    restaurant_data = {}
     Location_element = driver.find_element(By.CLASS_NAME, locators.Location_class)
     time.sleep(3)
     Location_element.click()
-
 
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, locators.Location_input_Xpath)))
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, locators.Location_input_Xpath)))
     Location_input_element = driver.find_element(By.XPATH, locators.Location_input_Xpath)
     Location_input_element.send_keys(OUTLET)
+
+    restaurant_data["Outlet Name"] = OUTLET_NAME
     restaurant_data["Outlet"] = OUTLET
     time.sleep(3)
 
     First_location_in_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, locators.First_location_in_list_Xpath)))
     First_location_in_list.click()
+    time.sleep(3)
+
+    Skip_and_add_later_element = driver.find_element(By.XPATH, locators.Skip_and_add_later_Xpath)
+    Skip_and_add_later_element.click()
     time.sleep(3)
 
     Search_element = driver.find_element(By.XPATH, locators.Search_Xpath)
@@ -76,16 +96,6 @@ def get_data_script():
     Resultant_cft_element = driver.find_element(By.XPATH, locators.CFT_div_Xpath)
     restaurant_data["CFT"] = Resultant_cft_element.text
 
-    # TODO check if tags present-> nothing prints blank
-    # Cuisine_tag_div = driver.find_element(By.XPATH, locators.Cuisine_tag_div_Xpath)
-    # a_tags = Cuisine_tag_div.find_elements(By.TAG_NAME, "a")
-    # tag_list = []
-    # for a_tag in a_tags:
-    #     nested_div = a_tag.find_element(By.TAG_NAME, "div")
-    #     tag_list.append(nested_div.text)
-    #     text = nested_div.text
-    # restaurant_data["Tags"] = tag_list
-
     # TODO check if deals present -> nothing prints blank
     Discount_divs = driver.find_elements(By.XPATH, locators.Discount_div_Xpath)
     discount_list = []
@@ -93,36 +103,85 @@ def get_data_script():
         # 1. src attribute of the img in the first div
         img_div = discount_div.find_elements(By.TAG_NAME, "div")[0] 
         img_src = img_div.find_element(By.TAG_NAME, "img").get_attribute("src")
-        
-        # 2. text of the nested divs in the second div
-        text_div_container = discount_div.find_elements(By.TAG_NAME, "div")[1]
-        inner_divs = text_div_container.find_elements(By.TAG_NAME, "div")
-        
-        text_1 = inner_divs[0].text if len(inner_divs) > 0 else ""
-        text_2 = inner_divs[1].text if len(inner_divs) > 1 else ""
-        # discount_list.append([text_1, text_2, img_src])
-        discount_list.append([text_1, text_2])
+
+        if img_src == "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_96,h_96/offers/generic":
+            # 2. text of the nested divs in the second div
+            text_div_container = discount_div.find_elements(By.TAG_NAME, "div")[1]
+            inner_divs = text_div_container.find_elements(By.TAG_NAME, "div")
+            
+            text_1 = inner_divs[0].text if len(inner_divs) > 0 else ""
+            text_2 = inner_divs[1].text if len(inner_divs) > 1 else ""
+            # discount_list.append([text_1, text_2, img_src])
+            discount_list.append([text_1, text_2])
 
     restaurant_data["Discounts"] = discount_list
 
-    for r in restaurant_data:
-        print(f"{r} : {restaurant_data[r]}")
-
-    time.sleep(3)
-    driver.quit()
-
     discounts_str = "; ".join([f"{d[0]}: {d[1]}" for d in restaurant_data["Discounts"]])
-    processed_data = [{
-            "Outlet": restaurant_data["Outlet"],
+    processed_data = {
+            "Name": restaurant_data["Outlet Name"],
+            "Location": restaurant_data["Outlet"],
             "Rating": restaurant_data["Rating"],
             "CFT": restaurant_data["CFT"],
             "Tags": restaurant_data["Tags"],
             "Discounts": discounts_str
-    }]
+    }
     print(processed_data)
+    restaurants_data.append(processed_data)
+    
 
-    df = pd.DataFrame(processed_data)
+def save_excel(restaurants_data):
+    for entry in restaurants_data:
+        entry["Discounts"] = entry["Discounts"].replace("; ", "\n")
+
+    df = pd.DataFrame(restaurants_data)
     df.to_excel("restaurants_data.xlsx", index=False)
     print("Data has been saved to 'restaurants_data.xlsx'")
 
-get_data_script()
+open_and_login()
+
+# location, name
+outlets = [    
+    ["Cyber City", "Sushi Haus - By Haus Delivery"],
+    ["Greater Kailash 2", "Amma's Haus - by Asian Haus"],
+    ["Greater Kailash 2", "Asian Haus - By Haus Delivery"],
+    ["Cyber City", "Asian Haus - By Haus Delivery"],
+    ["Vasant Kunj", "Asian Haus - By Haus Delivery"],
+    ["Greater Kailash 2", "Masala Haus - By Asian Haus"],
+    ["Greater Kailash 2", "Sushi Haus - By Haus Delivery"],
+    ["Vasant Kunj", "Sushi Haus - By Haus Delivery"]
+]
+for outlet in outlets:
+    get_data_script(outlet[0], outlet[1])
+
+
+save_excel(restaurants_data)
+
+excel_file = "restaurants_data.xlsx"
+wb = load_workbook(excel_file)
+ws = wb.active
+
+for col in ws.columns:
+    max_length = 0
+    column = col[0].column  # Get the column index (1-based)
+    column_letter = get_column_letter(column)  # Convert to Excel letter (A, B, etc.)
+
+    # Determine the maximum length of content in the column
+    for cell in col:
+        try:
+            if cell.value:  # Check if the cell is not empty
+                max_length = max(max_length, len(str(cell.value)))
+        except:
+            pass
+
+    # Set the column width
+    adjusted_width = max_length + 2  # Adding a little padding
+    ws.column_dimensions[column_letter].width = adjusted_width
+
+# Save the updated workbook
+wb.save(excel_file)
+
+print("Data saved to 'restaurants_data.xlsx' with adjusted column widths and multiline discounts.")
+
+def close_driver():
+    time.sleep(3)
+    driver.quit()
