@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -82,6 +83,27 @@ def get_data_script(OUTLET, OUTLET_NAME):
     else:
         print("Restaurant name matched!")
 
+    try:
+        closed_element = driver.find_element(By.XPATH, locators.Closed_resturant_Xpath)
+        print(f"Skipping closed restaurant: {OUTLET_NAME} at {OUTLET}")
+        processed_data = {
+            "Name": restaurant_data["Outlet Name"],
+            "Location": restaurant_data["Outlet"],
+            "Rating": "",
+            "CFT": "",
+            "Tags": "",
+            "Discounts": "",
+            "Status": "Offline"
+        }
+        print(processed_data)
+        restaurants_data.append(processed_data)
+        return
+    
+    except NoSuchElementException:
+        # Element not found means the restaurant is open, continue execution
+        pass
+    
+
     Cuisine_tag_span = driver.find_element(By.XPATH, locators.Cuisine_tag_span_Xpath)
     restaurant_data["Tags"] = Cuisine_tag_span.text
 
@@ -89,7 +111,6 @@ def get_data_script(OUTLET, OUTLET_NAME):
     time.sleep(5)
 
     # Reached Restaurant Page
-
     Resultant_rating_element = driver.find_element(By.XPATH, locators.Rating_div_Xpath)
     restaurant_data["Rating"] = Resultant_rating_element.text
 
@@ -123,7 +144,8 @@ def get_data_script(OUTLET, OUTLET_NAME):
             "Rating": restaurant_data["Rating"],
             "CFT": restaurant_data["CFT"],
             "Tags": restaurant_data["Tags"],
-            "Discounts": discounts_str
+            "Discounts": discounts_str,
+            "Status": "Online"
     }
     print(processed_data)
     restaurants_data.append(processed_data)

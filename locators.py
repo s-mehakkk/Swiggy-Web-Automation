@@ -11,6 +11,7 @@ Resultant_restaurant_Xpath = "(//div[@class='Search_widgetsV2__27BBR Search_widg
 Resultant_restaurant_thumbnail_Xpath = "(//div[@class='Search_widgetsV2__27BBR Search_widgets__3o_bA']/div/div/div)[1]"
 Resultant_restaurant_name_Xpath = "(//div[@class='styles_restaurantName__29jAP'])[1]"
 Cuisine_tag_span_Xpath = "//span[@data-testid='restaurant-card-cuisines'][1]"
+Closed_resturant_Xpath = "//div[@data-testid='closed-resturant-unorderable-message'][1]"
 
 Rating_div_Xpath = "(//div[contains(@class, 'sc-aXZVg eqdoYF')])[2]"
 CFT_div_Xpath = "(//div[contains(@class, 'sc-aXZVg eqdoYF')])[3]"
