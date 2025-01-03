@@ -18,21 +18,8 @@ CFT_div_Xpath = "(//div[contains(@class, 'sc-aXZVg eqdoYF')])[3]"
 
 # Cuisine_tag_div_Xpath = "//div[contains(@class, 'sc-jptKe gBgaSD')]"
 # Discount_div_Xpath = "//div[contains(@class, 'sc-kuCHnY hSYeJb')]"
-Discount_div_Xpath = "//div[contains(@class, 'sc-ctLLLr inwfSw')]"
+Discount_div_Xpath = "//div[contains(@data-testid, 'offer-card')]/div"
 
 Restaurant_Closing_Soon_Xpath = "//span[@data-testid='resturant-card-closing-message'][1]"
-
-# <div class="sc-kuCHnY hSYeJb">
-#     <div class="sc-ctLLLr cAKJXG">
-#     <img class="sc-bXCLTC dAqaCk" src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_96,h_96/offers/generic" width="48" height="48" alt="Flat ₹175 Off">
-#     </div>
-
-#     <div class="sc-gPDKlO harpWt">
-#         <div class="sc-aXZVg fMqZGG">
-#             Flat ₹175 Off
-#         </div>
-#         <div class="sc-aXZVg hczpuO">
-#             USE FLAT175
-#         </div>
-#     </div>
-# </div>
+popup1_Xpath = "//div[text()='OKAY GOT IT']"
+popup2_Xpath = "//div[text()='NOT NOW']"
