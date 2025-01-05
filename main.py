@@ -24,7 +24,6 @@ chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 chrome_options.add_argument("--disable-renderer-backgrounding")
 
 URL = "https://www.swiggy.com/"
-restaurants_data = []
 
 service = Service(executable_path="./chromedriver")
 driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -40,8 +39,8 @@ def open_and_login():
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, locators.Sign_in_span)))
     Sign_in_element = driver.find_element(By.XPATH, locators.Sign_in_span)
     Sign_in_element.click()
-    # login = WebDriverWait(driver, 100).until(EC.visibility_of_element_located((By.XPATH, "//a[text() = 'Login']")))
-    time.sleep(50)
+    login = WebDriverWait(driver, 100).until(EC.visibility_of_element_located((By.XPATH, '//div[@class="_3gNFD"]')))
+    # time.sleep(50)
 
 
 def open_and_load_cookies():
@@ -51,7 +50,7 @@ def open_and_load_cookies():
     for cookie in cookies:
         driver.add_cookie(cookie)
 
-def get_data_script(OUTLET, OUTLET_NAME):
+def get_data_script(restaurants_data, OUTLET, OUTLET_NAME):
     driver.get("https://www.swiggy.com/restaurants")
     global first_outlet
     if(first_outlet):
@@ -179,16 +178,16 @@ def get_data_script(OUTLET, OUTLET_NAME):
     restaurants_data.append(processed_data)
     
 
-def save_excel(restaurants_data):
+def save_excel(restaurants_data, restaurant):
     for entry in restaurants_data:
         entry["Discounts"] = entry["Discounts"].replace("; ", "\n")
 
     df = pd.DataFrame(restaurants_data)
-    df.to_excel("restaurants_data.xlsx", index=False)
-    print("Data has been saved to 'restaurants_data.xlsx'")
+    df.to_excel(f"./Results/{restaurant}_data.xlsx", index=False)
+    print(f"Data has been saved to '{restaurant}_data.xlsx'")
 
-def modify_excel():
-    excel_file = "restaurants_data.xlsx"
+def modify_excel(restaurant):
+    excel_file = f"./Results/{restaurant}_data.xlsx"
     wb = load_workbook(excel_file)
     ws = wb.active
 
@@ -213,7 +212,7 @@ def modify_excel():
         ws.column_dimensions[column_letter].width = adjusted_width
 
     wb.save(excel_file)
-    print("Data saved to 'restaurants_data.xlsx' with adjusted column widths and multiline discounts.")
+    print(f"Data saved to '{restaurant}_data.xlsx' with adjusted column widths and multiline discounts.")
 
 def close_driver():
     driver.quit()
@@ -221,7 +220,7 @@ def close_driver():
 
 
 # location, name
-outlets = [    
+haus = [    
     ["Cyber City", "Asian Haus - By Haus Delivery"],
     ["Cyber City", "Sushi Haus - By Haus Delivery"],
     ["Greater Kailash 2", "Amma's Haus - by Asian Haus"],
@@ -231,11 +230,37 @@ outlets = [
     ["Vasant Kunj", "Asian Haus - By Haus Delivery"],
     ["Vasant Kunj", "Sushi Haus - By Haus Delivery"]
 ]
+ambrosia = [
+    ["DLF phase 4 layla's", "Layla's Shawarma & Middle Eastern Kitchen"],
+    ["Green Park Layla's", "Layla's Shawarma & Middle Eastern Kitchen"],
+    ["Greater Kailash I", "Layla's Shawarma & Middle Eastern Kitchen"],
+    ["Punjabi Bagh layla's", "Layla's Shawarma & Middle Eastern Kitchen"]
+]
+how = [
+    ["Vasant Kunj House of wok", "House of wok"],
+    ["Greater Kailash I House of wok", "House of wok"],
+    ["DLF phase 4 House of wok", "House of wok"],
+    ["Baani Square", "House of wok"],
+    ["Mohali House of wok", "House of wok"],
+    ["Punjabi Bagh House of wok Prive", "House of wok Prive"],
+    ["Iris Broadway", "House of wok"],
+    ["M3m 65th avenue", "House of wok Prive"],
+]
+
+restaurants = [
+    {"name": "Haus", "data": haus},
+    {"name": "Ambrosia", "data": ambrosia},
+    {"name": "HouseOfWok", "data": how}
+]
 
 open_and_login()
 # open_and_load_cookies()
-for outlet in outlets:
-    get_data_script(outlet[0], outlet[1])
-save_excel(restaurants_data)
-modify_excel()
+
+for restaurant in restaurants:
+    restaurants_data = []
+    for outlet in restaurant["data"]:
+        get_data_script(restaurants_data, outlet[0], outlet[1])
+    save_excel(restaurants_data, restaurant["name"])
+    modify_excel(restaurant["name"])
+
 close_driver()
