@@ -3,3 +3,5 @@ __init__.py
 cookies.pkl
 try.py
 todo.txt
+.DS_Store
+*.xlsx

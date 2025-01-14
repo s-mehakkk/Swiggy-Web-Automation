@@ -50,7 +50,7 @@ def open_and_load_cookies():
     for cookie in cookies:
         driver.add_cookie(cookie)
 
-def get_data_script(restaurants_data, OUTLET, OUTLET_NAME):
+def get_data_script(restaurants_data, OUTLET, OUTLET_NAME, detailDiscount=False):
     driver.get("https://www.swiggy.com/restaurants")
     global first_outlet
     if(first_outlet):
@@ -102,7 +102,7 @@ def get_data_script(restaurants_data, OUTLET, OUTLET_NAME):
     First_restaurant_in_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, locators.First_restaurant_in_list_Xpath)))
     First_restaurant_in_list.click()
 
-    Resultant_restaurant_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, locators.Resultant_restaurant_Xpath)))
+    Resultant_restaurant_element = WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, locators.Resultant_restaurant_Xpath)))
     # checking if desired restaurant
     expected_name = OUTLET_NAME.strip().lower()
     Resultant_restaurant_name = driver.find_element(By.XPATH, locators.Resultant_restaurant_name_Xpath).text.strip().lower()
@@ -110,8 +110,6 @@ def get_data_script(restaurants_data, OUTLET, OUTLET_NAME):
         print("Restraunt name not matched")
         print(Resultant_restaurant_name)
         return
-    else:
-        print("Restaurant name matched!")
 
     try:
         closed_element = driver.find_element(By.XPATH, locators.Closed_resturant_Xpath)
@@ -125,7 +123,6 @@ def get_data_script(restaurants_data, OUTLET, OUTLET_NAME):
             "Discounts": "",
             "Status": "Offline"
         }
-        print(processed_data)
         restaurants_data.append(processed_data)
         return
     
@@ -154,18 +151,27 @@ def get_data_script(restaurants_data, OUTLET, OUTLET_NAME):
 
             if img_src == "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_96,h_96/offers/generic":
                 # 2. text of the nested divs in the second div
-                text_div_container = discount_div.find_elements(By.TAG_NAME, "div")[1]
-                inner_divs = text_div_container.find_elements(By.TAG_NAME, "div")
+                if(detailDiscount):
+                    time.sleep(1)
+                    discount_div.click()
+                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, locators.Discount_detail_Xpath)))
+                    text_div = driver.find_element(By.XPATH, locators.Discount_detail_Xpath)
+                    text = text_div.text if len(text_div.text) > 0 else ""
+                    discount_list.append([text])
+                    driver.find_element(By.XPATH, locators.Discount_detail_close_Xpath).click()
+                else:
+                    text_div_container = discount_div.find_elements(By.TAG_NAME, "div")[1]
+                    inner_divs = text_div_container.find_elements(By.TAG_NAME, "div")
 
-                text_1 = inner_divs[0].text if len(inner_divs) > 0 else ""
-                text_2 = inner_divs[1].text if len(inner_divs) > 1 else ""
-                # discount_list.append([text_1, text_2, img_src])
-                discount_list.append([text_1, text_2])
+                    text_1 = inner_divs[0].text if len(inner_divs) > 0 else ""
+                    text_2 = inner_divs[1].text if len(inner_divs) > 1 else ""
+                    # discount_list.append([text_1, text_2, img_src])
+                    discount_list.append([text_1, text_2])
         restaurant_data["Discounts"] = discount_list
     except NoSuchElementException:
         pass
 
-    discounts_str = "; ".join([f"{d[0]}: {d[1]}" for d in restaurant_data["Discounts"]])
+    discounts_str = "; ".join([f"{d[0]}: {d[1]}" if len(d) > 1 else f"{d[0]}" for d in restaurant_data["Discounts"]])
     processed_data = {
             "Name": restaurant_data["Outlet Name"],
             "Location": restaurant_data["Outlet"],
@@ -184,7 +190,6 @@ def save_excel(restaurants_data, restaurant):
 
     df = pd.DataFrame(restaurants_data)
     df.to_excel(f"./Results/{restaurant}_data.xlsx", index=False)
-    print(f"Data has been saved to '{restaurant}_data.xlsx'")
 
 def modify_excel(restaurant):
     excel_file = f"./Results/{restaurant}_data.xlsx"
@@ -212,7 +217,7 @@ def modify_excel(restaurant):
         ws.column_dimensions[column_letter].width = adjusted_width
 
     wb.save(excel_file)
-    print(f"Data saved to '{restaurant}_data.xlsx' with adjusted column widths and multiline discounts.")
+    print(f"Adjusted Data saved to '{restaurant}_data.xlsx'")
 
 def close_driver():
     driver.quit()
@@ -247,10 +252,21 @@ how = [
     ["M3m 65th avenue", "House of wok Prive"],
 ]
 
+pnb = [
+    ["Vasant Kunj Punjabi by nature", "Punjabi by nature"],
+    ["Sector 72 Noida", "Punjabi by nature"],
+    ["DLF Phase 3 Punjabi by nature", "Punjabi by nature"],
+    ["Hajipur Punjabi by nature", "Punjabi by nature"],
+    ["Dehradun Punjabi by nature", "Punjabi by nature"],
+    ["Punjabi by nature IFC", "Punjabi by nature"],
+    ["DLF Phase 4", "Punjabi by nature"]
+]
+
 restaurants = [
-    {"name": "Haus", "data": haus},
-    {"name": "Ambrosia", "data": ambrosia},
-    {"name": "HouseOfWok", "data": how}
+    {"name": "Haus", "data": haus, "detailDiscount": False},
+    {"name": "Ambrosia", "data": ambrosia, "detailDiscount": False},
+    {"name": "HouseOfWok", "data": how, "detailDiscount": False},
+    {"name": "PunjabiByNature", "data": pnb, "detailDiscount": True}
 ]
 
 open_and_login()
@@ -259,7 +275,7 @@ open_and_login()
 for restaurant in restaurants:
     restaurants_data = []
     for outlet in restaurant["data"]:
-        get_data_script(restaurants_data, outlet[0], outlet[1])
+        get_data_script(restaurants_data, outlet[0], outlet[1], restaurant["detailDiscount"])
     save_excel(restaurants_data, restaurant["name"])
     modify_excel(restaurant["name"])
 

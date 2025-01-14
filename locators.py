@@ -19,6 +19,8 @@ CFT_div_Xpath = "(//div[contains(@class, 'sc-aXZVg eqdoYF')])[3]"
 # Cuisine_tag_div_Xpath = "//div[contains(@class, 'sc-jptKe gBgaSD')]"
 # Discount_div_Xpath = "//div[contains(@class, 'sc-kuCHnY hSYeJb')]"
 Discount_div_Xpath = "//div[contains(@data-testid, 'offer-card')]/div"
+Discount_detail_Xpath = "//div[@class='sc-aXZVg cKDIFf sc-cVGIoq iUqffA']"
+Discount_detail_close_Xpath = "//button[@aria-label='Close']"
 
 Restaurant_Closing_Soon_Xpath = "//span[@data-testid='resturant-card-closing-message'][1]"
 popup1_Xpath = "//div[text()='OKAY GOT IT']"
