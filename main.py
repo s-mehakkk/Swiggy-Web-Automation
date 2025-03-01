@@ -250,6 +250,7 @@ how = [
     ["Punjabi Bagh House of wok Prive", "House of wok Prive"],
     ["Iris Broadway", "House of wok"],
     ["M3m 65th avenue", "House of wok Prive"],
+    ["Malviya nagar jaipur House of wok", "House of wok"]
 ]
 
 pnb = [
@@ -262,11 +263,18 @@ pnb = [
     ["DLF Phase 4", "Punjabi by nature"]
 ]
 
+Hudson = [
+    ["Hudson Chopsticks GTB nagar", "Hudson Chopsticks - Fresh Chinese"],
+    ["Doner & Gyros GTB nagar", "Doner & Gyros - Salad, Shawarma, Falafel House"],
+    ["Ashok Vihar", "Dragon Wok - Chinese restaurant"]
+]
+
 restaurants = [
-    {"name": "Haus", "data": haus, "detailDiscount": False},
-    {"name": "Ambrosia", "data": ambrosia, "detailDiscount": False},
-    {"name": "HouseOfWok", "data": how, "detailDiscount": False},
-    {"name": "PunjabiByNature", "data": pnb, "detailDiscount": True}
+    # {"name": "Ambrosia", "data": ambrosia, "detailDiscount": False},
+    # {"name": "PunjabiByNature", "data": pnb, "detailDiscount": True},
+    # {"name": "HouseOfWok", "data": how, "detailDiscount": True},
+    # {"name": "Haus", "data": haus, "detailDiscount": False},
+    {"name": "Hudson", "data": Hudson, "detailDiscount": False}
 ]
 
 open_and_login()
