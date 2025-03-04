@@ -259,6 +259,15 @@ def modify_excel(restaurant):
 def close_driver():
     driver.quit()
 
+import os
+
+# Ensure Results directory exists
+RESULTS_DIR = "./Results"
+if not os.path.exists(RESULTS_DIR):
+    os.makedirs(RESULTS_DIR)
+
+print("Script started successfully on Render!")
+
 
 
 # location, name
