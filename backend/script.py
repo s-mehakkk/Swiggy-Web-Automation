@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-import locators
+import backend.locators as locators
 import time
 import pandas as pd
 from openpyxl import load_workbook
@@ -16,21 +16,16 @@ from selenium.webdriver.chrome.options import Options
 import requests
 import os
 
-# chrome_options = Options()
-# chrome_options.add_argument("--user-data-dir=/Users/apple/Library/Application Support/Google/Chrome/")  # Use your profile path
-# chrome_options.add_argument("--profile-directory=Profile 1")
-
 chrome_options = Options()
 chrome_options.add_argument("--disable-background-timer-throttling")
 chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 chrome_options.add_argument("--disable-renderer-backgrounding")
-# chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless") 
 
 URL = "https://www.swiggy.com/"
 
-service = Service(executable_path="../chromedriver")
+service = Service(executable_path="./chromedriver")
 driver = webdriver.Chrome(service=service, options=chrome_options)
-# driver = webdriver.Chrome(options=chrome_options)
 driver.maximize_window()
 first_outlet = True
 Prev_location = ""
@@ -39,17 +34,15 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This gets the swiggy-au
 API_DIR = os.path.join(BASE_DIR, "selenium-api")
 
 def wait_for_input(filename):
-    """Wait for user input from API (phone or OTP)"""
-    file_path = os.path.join(API_DIR, filename)
-
+    """Waits for user input from API"""
+    file_path = os.path.join(os.getcwd(), filename)
     while not os.path.exists(file_path):
-        print(f"Waiting for {file_path}...")
+        print(f"Waiting for {filename}...")
         time.sleep(2)
-    
+
     with open(file_path, "r") as file:
         value = file.read().strip()
-    
-    # Remove the file after reading
+
     os.remove(file_path)
     return value
 
