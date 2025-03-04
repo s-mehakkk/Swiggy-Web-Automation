@@ -5,3 +5,6 @@ try.py
 todo.txt
 .DS_Store
 *.xlsx
+node_modules
+Misc/*
+Results/*

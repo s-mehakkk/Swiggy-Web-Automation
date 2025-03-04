@@ -13,6 +13,8 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 import pickle
 from selenium.webdriver.chrome.options import Options
+import requests
+import os
 
 # chrome_options = Options()
 # chrome_options.add_argument("--user-data-dir=/Users/apple/Library/Application Support/Google/Chrome/")  # Use your profile path
@@ -22,23 +24,66 @@ chrome_options = Options()
 chrome_options.add_argument("--disable-background-timer-throttling")
 chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 chrome_options.add_argument("--disable-renderer-backgrounding")
+# chrome_options.add_argument("--headless")
 
 URL = "https://www.swiggy.com/"
 
-service = Service(executable_path="./chromedriver")
+service = Service(executable_path="../chromedriver")
 driver = webdriver.Chrome(service=service, options=chrome_options)
 # driver = webdriver.Chrome(options=chrome_options)
 driver.maximize_window()
 first_outlet = True
 Prev_location = ""
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This gets the swiggy-auto folder
+API_DIR = os.path.join(BASE_DIR, "selenium-api")
+
+def wait_for_input(filename):
+    """Wait for user input from API (phone or OTP)"""
+    file_path = os.path.join(API_DIR, filename)
+
+    while not os.path.exists(file_path):
+        print(f"Waiting for {file_path}...")
+        time.sleep(2)
+    
+    with open(file_path, "r") as file:
+        value = file.read().strip()
+    
+    # Remove the file after reading
+    os.remove(file_path)
+    return value
+
 def open_and_login():
     driver.get(URL)
 
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, locators.Sign_in_span)))
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, locators.Sign_in_span))).click()
-    login = WebDriverWait(driver, 100).until(EC.visibility_of_element_located((By.XPATH, '//div[@class="_3gNFD"]')))
-    # time.sleep(50)
+
+    # Wait for user to send phone number via API
+    print("Waiting for user to send phone number...")
+    phone_number = wait_for_input("phone.txt")
+    print(f"Received phone number: {phone_number}")
+
+    # Enter phone number and click login
+    phone_input = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, '//input[@type="tel"]')))
+    phone_input.send_keys(phone_number)
+
+    submit_button = driver.find_element(By.XPATH, '//a[contains(text(), "Login")]')
+    submit_button.click()
+    
+    # Wait for OTP input from API
+    print("Waiting for OTP input...")
+    otp = wait_for_input("otp.txt")
+    print(f"Received OTP: {otp}")
+
+    # Enter OTP and submit
+    otp_input = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, '//input[@name="otp"]')))
+    otp_input.send_keys(otp)
+
+    otp_submit = driver.find_element(By.XPATH, '//a[contains(text(), "VERIFY OTP")]')
+    otp_submit.click()
+
+    print("Login successful. Proceeding with data extraction...")
 
 
 def open_and_load_cookies():
@@ -271,9 +316,9 @@ Hudson = [
 restaurants = [
     # {"name": "Ambrosia", "data": ambrosia, "detailDiscount": False},
     # {"name": "PunjabiByNature", "data": pnb, "detailDiscount": True},
-    # {"name": "HouseOfWok", "data": how, "detailDiscount": True},
     # {"name": "Haus", "data": haus, "detailDiscount": False},
-    {"name": "Hudson", "data": Hudson, "detailDiscount": False}
+    {"name": "Hudson", "data": Hudson, "detailDiscount": False},
+    # {"name": "HouseOfWok", "data": how, "detailDiscount": False},
 ]
 
 open_and_login()
@@ -286,4 +331,4 @@ for restaurant in restaurants:
     save_excel(restaurants_data, restaurant["name"])
     modify_excel(restaurant["name"])
 
-close_driver()
+close_driver() 
