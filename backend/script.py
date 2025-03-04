@@ -14,6 +14,7 @@ from openpyxl.styles import Alignment
 from selenium.webdriver.chrome.options import Options
 import requests
 import os
+import subprocess
 
 chrome_options = Options()
 chrome_options.add_argument("--disable-background-timer-throttling")
@@ -23,9 +24,29 @@ chrome_options.add_argument("--headless")
 
 URL = "https://www.swiggy.com/"
 
-service = Service(executable_path="./chromedriver")
+# Install Google Chrome and ChromeDriver (only on Render)
+def install_chrome():
+    print("Installing Google Chrome...")
+    subprocess.run("wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -", shell=True, check=True)
+    subprocess.run("sudo sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main\" >> /etc/apt/sources.list.d/google-chrome.list'", shell=True, check=True)
+    subprocess.run("sudo apt update && sudo apt install -y google-chrome-stable", shell=True, check=True)
+
+def install_chromedriver():
+    print("Installing ChromeDriver...")
+    subprocess.run("wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True, check=True)
+    subprocess.run("unzip chromedriver_linux64.zip", shell=True, check=True)
+    subprocess.run("sudo mv chromedriver /usr/local/bin/", shell=True, check=True)
+    subprocess.run("sudo chmod +x /usr/local/bin/chromedriver", shell=True, check=True)
+
+# Install Chrome & ChromeDriver if not already installed
+install_chrome()
+install_chromedriver()
+
+service = Service("/usr/local/bin/chromedriver")
 driver = webdriver.Chrome(service=service, options=chrome_options)
-driver.maximize_window()
+
+print("Chrome & ChromeDriver successfully installed and running!")
+
 first_outlet = True
 Prev_location = ""
 
@@ -250,8 +271,6 @@ def modify_excel(restaurant):
 
 def close_driver():
     driver.quit()
-
-import os
 
 # Ensure Results directory exists
 RESULTS_DIR = "./Results"
