@@ -24,25 +24,33 @@ chrome_options.add_argument("--headless")
 
 URL = "https://www.swiggy.com/"
 
-# Install Google Chrome and ChromeDriver (only on Render)
+CHROME_PATH = "/opt/google/chrome/chrome"
+CHROMEDRIVER_PATH = "/opt/chromedriver/chromedriver"
+
+# Function to install Chrome
 def install_chrome():
     print("Installing Google Chrome...")
-    subprocess.run("wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -", shell=True, check=True)
-    subprocess.run("sudo sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main\" >> /etc/apt/sources.list.d/google-chrome.list'", shell=True, check=True)
-    subprocess.run("sudo apt update && sudo apt install -y google-chrome-stable", shell=True, check=True)
+    subprocess.run("mkdir -p /opt/google/chrome", shell=True, check=True)
+    subprocess.run("wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True, check=True)
+    subprocess.run("dpkg -x google-chrome-stable_current_amd64.deb /opt/google/", shell=True, check=True)
 
+# Function to install ChromeDriver
 def install_chromedriver():
     print("Installing ChromeDriver...")
+    subprocess.run("mkdir -p /opt/chromedriver", shell=True, check=True)
     subprocess.run("wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True, check=True)
-    subprocess.run("unzip chromedriver_linux64.zip", shell=True, check=True)
-    subprocess.run("sudo mv chromedriver /usr/local/bin/", shell=True, check=True)
-    subprocess.run("sudo chmod +x /usr/local/bin/chromedriver", shell=True, check=True)
+    subprocess.run("unzip -o chromedriver_linux64.zip -d /opt/chromedriver/", shell=True, check=True)
 
 # Install Chrome & ChromeDriver if not already installed
-install_chrome()
-install_chromedriver()
+if not os.path.exists(CHROME_PATH):
+    install_chrome()
 
-service = Service("/usr/local/bin/chromedriver")
+if not os.path.exists(CHROMEDRIVER_PATH):
+    install_chromedriver()
+
+chrome_options.binary_location = CHROME_PATH
+
+service = Service(CHROMEDRIVER_PATH)
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 print("Chrome & ChromeDriver successfully installed and running!")
