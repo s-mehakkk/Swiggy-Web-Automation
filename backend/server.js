@@ -6,9 +6,10 @@ const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 5050;
+const originUrl = process.env.CORS_ORIGIN || "http://localhost:5173"
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin:  originUrl}));
 app.use(express.urlencoded({ extended: true }));
 
 // Route to start Selenium script
