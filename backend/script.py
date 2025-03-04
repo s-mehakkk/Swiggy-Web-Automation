@@ -11,7 +11,6 @@ import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
-import pickle
 from selenium.webdriver.chrome.options import Options
 import requests
 import os
@@ -78,13 +77,6 @@ def open_and_login():
 
     print("Login successful. Proceeding with data extraction...")
 
-
-def open_and_load_cookies():
-    driver.get(URL)
-    with open("cookies.pkl", "rb") as f:
-        cookies = pickle.load(f)
-    for cookie in cookies:
-        driver.add_cookie(cookie)
 
 def get_data_script(restaurants_data, OUTLET, OUTLET_NAME, detailDiscount=False):
     driver.get("https://www.swiggy.com/restaurants")
