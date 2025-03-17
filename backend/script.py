@@ -26,34 +26,43 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 
 URL = "https://www.swiggy.com/"
 
-CHROME_PATH = "/tmp/chrome-linux/chrome"
+CHROME_DIR = "/tmp/chrome"
+CHROME_PATH = "/tmp/chrome/chrome"
 CHROMEDRIVER_PATH = "/tmp/chromedriver/chromedriver"
 
+# Function to install Portable Chrome
 def install_chrome():
     if not os.path.exists(CHROME_PATH):
-        print("Installing Google Chrome in /tmp/...")
+        print("Installing Portable Chrome in /tmp/...")
 
-        # Download portable Chrome directly (works in Render)
-        subprocess.run("mkdir -p /tmp/chrome-linux", shell=True, check=True)
-        subprocess.run("wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome.deb", shell=True, check=True)
+        # Create directory if not exists
+        os.makedirs(CHROME_DIR, exist_ok=True)
 
-        # Extract using ar (avoids dpkg issues)
-        subprocess.run("ar x /tmp/google-chrome.deb --output /tmp/chrome-linux", shell=True, check=True)
-        subprocess.run("tar -xvf /tmp/chrome-linux/data.tar.xz -C /tmp/chrome-linux", shell=True, check=True)
-        
+        # Download pre-built Chrome binary
+        subprocess.run("wget -q https://storage.googleapis.com/chrome-for-testing-public/114.0.5735.90/linux64/chrome-linux.zip -O /tmp/chrome.zip", shell=True, check=True)
+        subprocess.run("unzip -o /tmp/chrome.zip -d /tmp/", shell=True, check=True)
+
         print("✅ Chrome installed successfully in /tmp/!")
 
+# Function to install ChromeDriver
 def install_chromedriver():
     if not os.path.exists(CHROMEDRIVER_PATH):
         print("Installing ChromeDriver in /tmp/...")
-        subprocess.run("mkdir -p /tmp/chromedriver", shell=True, check=True)
+        
+        # Create directory if not exists
+        os.makedirs("/tmp/chromedriver", exist_ok=True)
+
         subprocess.run("wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -O /tmp/chromedriver.zip", shell=True, check=True)
         subprocess.run("unzip -o /tmp/chromedriver.zip -d /tmp/chromedriver/", shell=True, check=True)
         subprocess.run("chmod +x /tmp/chromedriver/chromedriver", shell=True, check=True)
+
         print("✅ ChromeDriver installed successfully in /tmp/!")
 
 install_chrome()
 install_chromedriver()
+
+if not os.path.exists(CHROME_PATH):
+    raise FileNotFoundError("🚨 Chrome binary was not found at expected location!")
 
 chrome_options.binary_location = CHROME_PATH
 
