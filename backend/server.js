@@ -4,6 +4,25 @@ const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
 
+const { exec } = require("child_process");
+
+exec("which google-chrome", (err, stdout, stderr) => {
+    if (err) {
+        console.error("Error finding Chrome:", stderr);
+    } else {
+        console.log("✅ Google Chrome Path:", stdout.trim());
+    }
+});
+
+exec("which chromedriver", (err, stdout, stderr) => {
+    if (err) {
+        console.error("Error finding ChromeDriver:", stderr);
+    } else {
+        console.log("✅ ChromeDriver Path:", stdout.trim());
+    }
+});
+
+
 const app = express();
 const PORT = process.env.PORT || 5050;
 const originUrl = process.env.CORS_ORIGIN || "http://localhost:5173"
