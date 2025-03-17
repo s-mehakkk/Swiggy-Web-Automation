@@ -17,36 +17,37 @@ import os
 import subprocess
 
 chrome_options = Options()
-chrome_options.add_argument("--disable-background-timer-throttling")
-chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-chrome_options.add_argument("--disable-renderer-backgrounding")
+# chrome_options.add_argument("--disable-background-timer-throttling")
+# chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+# chrome_options.add_argument("--disable-renderer-backgrounding")
 chrome_options.add_argument("--headless") 
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
 
 URL = "https://www.swiggy.com/"
 
-CHROME_PATH = "/opt/google/chrome/chrome"
-CHROMEDRIVER_PATH = "/opt/chromedriver/chromedriver"
+CHROME_PATH = "/tmp/chrome/chrome"
+CHROMEDRIVER_PATH = "/tmp/chromedriver/chromedriver"
 
-# Function to install Chrome
 def install_chrome():
-    print("Installing Google Chrome...")
-    subprocess.run("mkdir -p /opt/google/chrome", shell=True, check=True)
-    subprocess.run("wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True, check=True)
-    subprocess.run("dpkg -x google-chrome-stable_current_amd64.deb /opt/google/", shell=True, check=True)
+    if not os.path.exists(CHROME_PATH):
+        print("Installing Google Chrome in /tmp/...")
+        subprocess.run("mkdir -p /tmp/chrome", shell=True, check=True)
+        subprocess.run("wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome.deb", shell=True, check=True)
+        subprocess.run("dpkg -x /tmp/google-chrome.deb /tmp/chrome/", shell=True, check=True)
+        print("✅ Chrome installed successfully!")
 
-# Function to install ChromeDriver
 def install_chromedriver():
-    print("Installing ChromeDriver...")
-    subprocess.run("mkdir -p /opt/chromedriver", shell=True, check=True)
-    subprocess.run("wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip", shell=True, check=True)
-    subprocess.run("unzip -o chromedriver_linux64.zip -d /opt/chromedriver/", shell=True, check=True)
+    if not os.path.exists(CHROMEDRIVER_PATH):
+        print("Installing ChromeDriver in /tmp/...")
+        subprocess.run("mkdir -p /tmp/chromedriver", shell=True, check=True)
+        subprocess.run("wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -O /tmp/chromedriver.zip", shell=True, check=True)
+        subprocess.run("unzip -o /tmp/chromedriver.zip -d /tmp/chromedriver/", shell=True, check=True)
+        subprocess.run("chmod +x /tmp/chromedriver/chromedriver", shell=True, check=True)
+        print("✅ ChromeDriver installed successfully!")
 
-# Install Chrome & ChromeDriver if not already installed
-if not os.path.exists(CHROME_PATH):
-    install_chrome()
-
-if not os.path.exists(CHROMEDRIVER_PATH):
-    install_chromedriver()
+install_chrome()
+install_chromedriver()
 
 chrome_options.binary_location = CHROME_PATH
 
