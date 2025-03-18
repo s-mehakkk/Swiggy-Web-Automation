@@ -288,12 +288,7 @@ haus = [
     ["Vasant Kunj", "Asian Haus - By Haus Delivery"],
     ["Vasant Kunj", "Sushi Haus - By Haus Delivery"]
 ]
-ambrosia = [
-    ["DLF phase 4 layla's", "Layla's Shawarma & Middle Eastern Kitchen"],
-    ["Green Park Layla's", "Layla's Shawarma & Middle Eastern Kitchen"],
-    ["Greater Kailash I", "Layla's Shawarma & Middle Eastern Kitchen"],
-    ["Punjabi Bagh layla's", "Layla's Shawarma & Middle Eastern Kitchen"]
-]
+
 how = [
     ["Vasant Kunj House of wok", "House of wok"],
     ["Greater Kailash I House of wok", "House of wok"],
@@ -301,14 +296,19 @@ how = [
     ["Baani Square", "House of wok"],
     ["Mohali House of wok", "House of wok"],
     ["Punjabi Bagh House of wok Prive", "House of wok Prive"],
-    ["Iris Broadway", "House of wok"],
+    ["Iris Broadway house of wok", "House of wok"],
     ["M3m 65th avenue", "House of wok Prive"],
     ["Malviya nagar jaipur House of wok", "House of wok"]
 ]
 
 pnb = [
     ["Vasant Kunj Punjabi by nature", "Punjabi by nature"],
-    ["Sector 72 Noida", "Punjabi by nature"]
+    ["Sector 72 Noida", "Punjabi by nature"],
+    ["DLF Phase 3 Punjabi by nature", "Punjabi by nature"],
+    ["Hajipur Punjabi by nature", "Punjabi by nature"],
+    ["Dehradun Punjabi by nature", "Punjabi by nature"],
+    ["Punjabi by nature IFC", "Punjabi by nature"],
+    ["DLF Phase 4", "Punjabi by nature"]
 ]
 
 Hudson = [
@@ -318,14 +318,13 @@ Hudson = [
 ]
 
 restaurants = [
-    # {"name": "Ambrosia", "data": ambrosia, "detailDiscount": False},
     {"name": "PunjabiByNature", "data": pnb, "detailDiscount": True},
+    {"name": "HouseOfWok", "data": how, "detailDiscount": True},
+    {"name": "Haus", "data": haus, "detailDiscount": False},
     {"name": "Hudson", "data": Hudson, "detailDiscount": False},
-    # {"name": "HouseOfWok", "data": how, "detailDiscount": False},
 ]
 
 open_and_login()
-# open_and_load_cookies()
 
 for restaurant in restaurants:
     restaurants_data = []
