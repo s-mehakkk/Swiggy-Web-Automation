@@ -1,0 +1,18 @@
+services:
+  - name: swiggy-backend
+    type: web
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5050
+
+  - name: swiggy-python-script
+    type: web
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 4 -b 0.0.0.0:$PORT script:app
+    envVars:
+      - key: PORT
+        value: 5001

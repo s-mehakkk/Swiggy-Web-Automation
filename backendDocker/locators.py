@@ -1,0 +1,27 @@
+Sign_in_span = "//a[text()='Sign in']"
+
+Location_class = "_1wAM-"
+Location_input_Xpath = "//input[contains(@class, '_5ZhdF _3GoNS itiW2')]"
+Skip_and_add_later_Xpath = "//a[contains(@class, 'y7qDp')]"
+First_location_in_list_Xpath = "(//div[@class='_2RwM6'])[1]"
+Search_Xpath = "//span[text()='Search']"
+Search_input_Xpath = "//input[contains(@class, 'ssM7E')]"
+First_restaurant_in_list_Xpath =  "(//div[@class='_29yzU']/button)[1]"
+Resultant_restaurant_Xpath = "(//a[@data-testid='resturant-card-anchor-container'])[1]"
+Resultant_restaurant_thumbnail_Xpath = "(//div[@class='Search_widgetsV2__27BBR Search_widgets__3o_bA']/div/div/div)[1]"
+Resultant_restaurant_name_Xpath = "(//div[@data-testid='resturant-card-name'])[1]"
+Cuisine_tag_span_Xpath = "//span[@data-testid='restaurant-card-cuisines'][1]"
+Closed_resturant_Xpath = "//div[@data-testid='closed-resturant-unorderable-message'][1]"
+
+Rating_div_Xpath = "(//div[contains(@class, 'sc-aXZVg bTHhpu')])[2]"
+CFT_div_Xpath = "(//div[contains(@class, 'sc-aXZVg bTHhpu')])[3]"
+
+# Cuisine_tag_div_Xpath = "//div[contains(@class, 'sc-jptKe gBgaSD')]"
+# Discount_div_Xpath = "//div[contains(@class, 'sc-kuCHnY hSYeJb')]"
+Discount_div_Xpath = "//div[contains(@data-testid, 'offer-card')]/div"
+Discount_detail_Xpath = "//div[@role='dialog']/div[contains(@class, 'sc-aXZVg')]"
+Discount_detail_close_Xpath = "//button[@aria-label='Close']"
+
+Restaurant_Closing_Soon_Xpath = "//span[@data-testid='resturant-card-closing-message'][1]"
+popup1_Xpath = "//div[text()='OKAY GOT IT']"
+popup2_Xpath = "//div[text()='NOT NOW']"

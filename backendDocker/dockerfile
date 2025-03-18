@@ -1,0 +1,28 @@
+FROM node:18-bullseye
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    wget \
+    unzip \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /usr/share/keyrings/google-chrome-keyring.gpg \
+    && echo 'deb [signed-by=/usr/share/keyrings/google-chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update && apt-get install -y google-chrome-stable \
+    && wget -q https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.88/linux64/chromedriver-linux64.zip\
+    && unzip chromedriver-linux64.zip -d /usr/local/bin/ \
+    && rm chromedriver-linux64.zip
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+
+RUN pip3 install -r requirements.txt
+
+EXPOSE 5050
+
+CMD ["node", "server.js"]
